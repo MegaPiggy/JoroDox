@@ -523,11 +523,12 @@ module.factory('rendererService', ['$rootScope', '$q', 'modService', '$filter', 
 						{name: 'min', type: 'float', data: [bb.min.x, bb.min.y, bb.min.z]},
 						{name: 'max', type: 'float', data: [bb.max.x, bb.max.y, bb.max.z]},
 					]});
+					var textureName = subObject.material.name ? subObject.material.name : options.textureBaseName;
 					mesh.subNodes.push({name: 'material', type: 'object', subNodes: [
 						{name: 'shader', type: 'string', data: options.pdxShader ? options.pdxShader : 'PdxMeshStandard', nullByteString: true},
-						{name: 'diff', type: 'string', data: options.textureBaseName +'_diffuse.dds', nullByteString: true},
-						{name: 'n', type: 'string', data: options.textureBaseName +'_normal.dds', nullByteString: true},
-						{name: 'spec', type: 'string', data: options.textureBaseName +'_spec.dds', nullByteString: true},
+						{name: 'diff', type: 'string', data: textureName + '_diffuse.dds', nullByteString: true},
+						{name: 'n', type: 'string', data: textureName + '_normal.dds', nullByteString: true},
+						{name: 'spec', type: 'string', data: textureName + '_spec.dds', nullByteString: true},
 					]});
 					shapeRoot.subNodes.push(mesh);
 
@@ -1678,18 +1679,7 @@ module.factory('rendererService', ['$rootScope', '$q', 'modService', '$filter', 
 			}
 			else
 			{
-				if (!(pdxMaterial.shader == 'PdxMeshTextureAtlas'
-					|| pdxMaterial.shader == 'PdxMeshAlphaBlendNoZWrite'
-					|| pdxMaterial.shader == 'PdxMeshColor'
-					|| pdxMaterial.shader == 'PdxMeshStandard'
-					|| pdxMaterial.shader == 'PdxMeshSnow'
-					|| pdxMaterial.shader == 'PdxMeshAlphaBlend'
-					|| pdxMaterial.shader == 'PdxMeshStandard_NoFoW_NoTI'
-					|| pdxMaterial.shader == 'JdxMeshShield'
-					|| pdxMaterial.shader == 'JdxMeshShieldTextureAtlas'))
-				{
-					console.log('Unknown shader: '+ pdxMaterial.shader);
-				}
+				console.log('Shader: '+ pdxMaterial.shader);
 
 				material = new THREE.MeshPhongMaterial();
 				if ('diff' in pdxMaterial)
@@ -1712,7 +1702,11 @@ module.factory('rendererService', ['$rootScope', '$q', 'modService', '$filter', 
 				{
 					material.transparent = true;
 				}
-				if (pdxMaterial.shader == 'PdxMeshAlphaBlend')
+				if (pdxMaterial.shader == 'PdxMeshAlphaBlend' || pdxMaterial.shader == 'PdxMeshTerraAlphaBlend' || pdxMaterial.shader == 'PdxMeshPlanetRings' || pdxMaterial.shader == 'PdxMeshShipDiffuseEmissiveAlpha')
+				{
+					material.transparent = true;
+				}
+				if (pdxMaterial.shader == 'PdxMeshAlphaAdditive')
 				{
 					material.transparent = true;
 				}
